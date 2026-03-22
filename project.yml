@@ -1,0 +1,140 @@
+name: FocusBrick
+options:
+  bundleIdPrefix: com.focusbrick
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1"       # iPhone only
+    INFOPLIST_KEY_UILaunchScreen_Generation: true
+
+targets:
+
+  # ─────────────────────────────────────────────
+  # Main App
+  # ─────────────────────────────────────────────
+  FocusBrick:
+    type: application
+    platform: iOS
+    sources:
+      # All main app files
+      - path: FocusBrick
+        excludes:
+          - "**/*.entitlements"
+          - "Info.plist"
+    info:
+      path: FocusBrick/Info.plist
+    entitlements:
+      path: FocusBrick/FocusBrick.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.focusbrick.app
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: FocusBrickMonitor
+      - target: FocusBrickShield
+      - target: FocusBrickWidget
+    scheme:
+      testTargets: []
+
+  # ─────────────────────────────────────────────
+  # Device Activity Monitor Extension
+  # ─────────────────────────────────────────────
+  FocusBrickMonitor:
+    type: app-extension
+    platform: iOS
+    sources:
+      # Extension's own source
+      - path: FocusBrickMonitor
+        excludes:
+          - "**/*.entitlements"
+      # Shared files from the main app needed by this extension
+      - path: FocusBrick/Models/PersistenceController.swift
+      - path: FocusBrick/Models/Device+CoreData.swift
+      - path: FocusBrick/Models/Mode+CoreData.swift
+      - path: FocusBrick/Models/Schedule+CoreData.swift
+      - path: FocusBrick/Models/Session+CoreData.swift
+      - path: FocusBrick/Models/TriggerType.swift
+      - path: FocusBrick/Services/BlockingService.swift
+      - path: FocusBrick/Services/KeychainService.swift
+    entitlements:
+      path: FocusBrickMonitor/FocusBrickMonitor.entitlements
+    info:
+      properties:
+        CFBundleDisplayName: FocusBrickMonitor
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.deviceactivitymonitor
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).DeviceActivityMonitorExtension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.focusbrick.app.monitor
+        SKIP_INSTALL: true
+        SWIFT_EMIT_LOC_STRINGS: true
+
+  # ─────────────────────────────────────────────
+  # Shield Configuration Extension
+  # ─────────────────────────────────────────────
+  FocusBrickShield:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: FocusBrickShield
+        excludes:
+          - "**/*.entitlements"
+    entitlements:
+      path: FocusBrickShield/FocusBrickShield.entitlements
+    info:
+      properties:
+        CFBundleDisplayName: FocusBrickShield
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.shieldconfiguration
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShieldConfigurationExtension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.focusbrick.app.shield
+        SKIP_INSTALL: true
+        SWIFT_EMIT_LOC_STRINGS: true
+
+  # ─────────────────────────────────────────────
+  # Widget / Live Activity Extension
+  # ─────────────────────────────────────────────
+  FocusBrickWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      # Extension's own source
+      - path: FocusBrickWidget
+        excludes:
+          - "**/*.entitlements"
+      # Shared files from the main app needed by this extension
+      - path: FocusBrick/Models/PersistenceController.swift
+      - path: FocusBrick/Models/Device+CoreData.swift
+      - path: FocusBrick/Models/Mode+CoreData.swift
+      - path: FocusBrick/Models/Schedule+CoreData.swift
+      - path: FocusBrick/Models/Session+CoreData.swift
+      - path: FocusBrick/Models/TriggerType.swift
+      - path: FocusBrick/Utilities/Color+Hex.swift
+    entitlements:
+      path: FocusBrickWidget/FocusBrickWidget.entitlements
+    info:
+      properties:
+        CFBundleDisplayName: FocusBrickWidget
+        CFBundleShortVersionString: "1.0.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.focusbrick.app.widget
+        SKIP_INSTALL: true
+        SWIFT_EMIT_LOC_STRINGS: true
